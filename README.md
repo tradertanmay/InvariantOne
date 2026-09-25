@@ -5,7 +5,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://github.com/tradertanmay/InvariantOne/blob/main/LICENSE)
 [![Model: D5-L4](https://img.shields.io/badge/Architecture-D5--L4%20%7C%20Nop%3D16-purple.svg)](https://huggingface.co/TanmaySah/InvariantOne-v1)
-[![Equivariance: Exact](https://img.shields.io/badge/Permutation%20TVD-0.000000-brightgreen.svg)](https://huggingface.co/TanmaySah/InvariantOne-v1)
+[![Equivariance: Exact](https://img.shields.io/badge/Equivariance-Exact%20by%20Construction-brightgreen.svg)](https://huggingface.co/TanmaySah/InvariantOne-v1)
 
 ---
 
@@ -15,7 +15,7 @@ Many LLM-based multi-option decision pipelines evaluate candidates jointly in a 
 
 **InvariantOne** resolves these problems architecturally:
 1. **Independent Branch Encoding:** Each candidate choice $[S, Q, O_k]$ is processed independently through an adapted `Qwen/Qwen3.5-4B-Base` backbone.
-2. **Exact Distributional Permutation Equivariance:** Pooled option representations pass into a direct comparative head (Projection: $\text{Linear}(2560 \to 256) \to \text{LayerNorm}(256)$; Absolute Scorer: $\text{Linear}(256 \to 256) \to \text{SiLU} \to \text{Linear}(256 \to 1)$), guaranteeing $\text{TVD} = 0.000000$ across all option permutations.
+2. **Analytic Distributional Permutation Equivariance:** Option-span pooled representations pass into a lightweight direct comparative head (Projection: $\text{Linear}(2560 \to 256) \to \text{LayerNorm}(256)$; Absolute Scorer: $\text{Linear}(256 \to 256) \to \text{SiLU} \to \text{Linear}(256 \to 1)$), producing scalar scores normalized via calibrated softmax. The candidate-independent scoring architecture is exactly permutation-equivariant by construction in real arithmetic. In the finite-precision implementation audit, the measured distributional TVD was 0.000000 to six decimal places across all tested permutations. Discrete argmax selection showed a 1.56% top-choice flip rate in tied/near-tied cases due to tie-breaking behavior.
 3. **Calibrated Confidence:** Output probabilities are normalized with a frozen temperature parameter ($\tau^* = 1.0091$).
 
 ---
@@ -33,7 +33,7 @@ Many LLM-based multi-option decision pipelines evaluate candidates jointly in a 
 | **Auxiliary Stored Head Parameters** | 262,657 parameters (`pair_net`, stored in `head.pt` checkpoint but bypassed during v1 inference) |
 | **Total Stored Head Parameters** | 984,834 parameters (in checkpoint file `head.pt`) |
 | **Total Active Adapted Parameters** | 1,307,905 parameters (585,728 LoRA + 722,177 Head; <0.05% of base model) |
-| **Permutation Equivariance** | Exact algebraic distributional invariance ($\text{TVD} = 0.000000$) |
+| **Permutation Equivariance** | Mathematically exact by construction in real arithmetic (measured TVD = 0.000000 to six decimal places) |
 | **Calibration Temperature** | $\tau^* = 1.0091$ (pre-calibrated temperature scaling) |
 
 ---
@@ -214,7 +214,7 @@ Evaluated on `FINAL-HOLDOUT-V2` ($1,536$ four-choice items) under strict preregi
 
 *Multi-seed aggregate mean across Seeds 42, 43, 44 is **71.74%** ($\pm 1.97\%$).*
 
-**Permutation Equivariance:** $\text{TVD} = 0.000000$ across all 24 permutations.  
+**Permutation Equivariance:** Measured finite-precision $\text{TVD} = 0.000000$ across all 24 permutations (exact by construction in real arithmetic).  
 **Inference Speedup:** $5.08\times$ faster than 24-permutation symmetrized causal baseline ($83.71\text{ ms}$ vs $425.31\text{ ms}$ on A100).
 
 ---
@@ -223,7 +223,7 @@ Evaluated on `FINAL-HOLDOUT-V2` ($1,536$ four-choice items) under strict preregi
 
 1. **Dynamic-$K$ Scientific Generalization:** While the runtime supports arbitrary $K \ge 2$ and exact permutation equivariance holds algebraically, empirical benchmark accuracy ($94.14\%$, $89.84\%$, etc.) was evaluated on 4-choice tasks ($K=4$). Experimental generalization to arbitrary $K$ has not been independently established in the scientific benchmarks.
 2. **Novel Relational Operators:** InvariantOne excels at familiar-operator recombination ($89.84\%$) and semantic domain transfer ($86.33\%$). However, completely unseen operator grammars drop to $55.08\%$ ($L_{2b}$) and $56.84\%$ ($L_3$), where 24-permutation causal averaging remains stronger ($65.43\%$).
-3. **Top-1 Argmax Tie Breaking:** Discrete argmax selection showed a 1.56% top-choice flip rate in tied/near-tied cases due to tie-breaking behavior under finite floating-point precision. The underlying continuous probabilistic output distribution is strictly equivariant.
+3. **Top-1 Argmax Tie Breaking:** Discrete argmax selection showed a 1.56% top-choice flip rate in tied/near-tied cases due to tie-breaking behavior under finite floating-point precision. The underlying continuous probabilistic output distribution is strictly permutation-equivariant in real arithmetic.
 4. **No Generative Explanations:** InvariantOne is a dedicated decision model; it does not produce token-by-token natural-language rationales.
 5. **Confidence Estimates:** Probabilities represent model confidence estimates and are not safety-critical certification guarantees.
 

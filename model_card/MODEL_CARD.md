@@ -28,7 +28,7 @@ tags:
 ## Quickstart
 
 ```bash
-pip install invariantone==1.0.1
+pip install invariantone==1.0.2
 ```
 
 ```python
@@ -103,7 +103,7 @@ Candidate choice probabilities are computed by independent forward passes throug
 p_i = exp(s_i / tau*) / sum_j exp(s_j / tau*)
 ```
 
-where $s_i$ is the unnormalized scalar score for candidate option $i$, and $	au^* = 1.0091$ is the frozen calibration temperature.
+where $s_i$ is the unnormalized scalar score for candidate option $i$, and τ* = 1.0091 is the frozen calibration temperature.
 
 ### DirectComparativeHead Architectural Details
 
@@ -177,7 +177,7 @@ The v1 public release includes the runtime, tests, checkpoint hashes, model card
 
 ### Structural Invariance Audit
 * **Distributional Equivariance**: The candidate-independent scoring architecture is exactly permutation-equivariant by construction in real arithmetic. In the finite-precision implementation audit, the measured distributional TVD was 0.000000 to six decimal places across all tested permutations on 128 samples (3,072 evaluations; Mean TVD = 0.000000, Max TVD = 0.000000).
-* **Top-1 Tie-Breaking Instability**: Discrete argmax selection showed a 1.56% top-choice flip rate in tied/near-tied cases due to tie-breaking behavior under finite floating-point precision. The underlying continuous probabilistic output distribution is strictly equivariant.
+* **Top-1 Tie-Breaking Instability**: Discrete argmax selection showed a 1.56% top-choice flip rate in tied/near-tied cases due to tie-breaking behavior under finite floating-point precision. The underlying continuous probabilistic output distribution is strictly permutation-equivariant in real arithmetic.
 
 ### Computational Efficiency (Measured on NVIDIA A100-SXM4-40GB)
 * **Benchmark Provenance Note:** A100 performance figures are from the frozen FINAL-HOLDOUT-V2 benchmarking run; release-wheel functionality was independently smoke-tested in a fresh Python 3.12 environment.
