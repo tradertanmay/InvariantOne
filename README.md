@@ -3,9 +3,9 @@
 **InvariantOne is a natural-language decision model that scores runtime-defined options directly rather than generating an answer token-by-token.**
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Model: D5-L4](https://img.shields.io/badge/Architecture-D5--L4%20%7C%20Nop%3D16-purple.svg)](model_card/MODEL_CARD.md)
-[![Equivariance: Exact](https://img.shields.io/badge/Permutation%20TVD-0.000000-brightgreen.svg)](model_card/MODEL_CARD.md)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://github.com/tradertanmay/InvariantOne/blob/main/LICENSE)
+[![Model: D5-L4](https://img.shields.io/badge/Architecture-D5--L4%20%7C%20Nop%3D16-purple.svg)](https://huggingface.co/TanmaySah/InvariantOne-v1)
+[![Equivariance: Exact](https://img.shields.io/badge/Permutation%20TVD-0.000000-brightgreen.svg)](https://huggingface.co/TanmaySah/InvariantOne-v1)
 
 ---
 
@@ -15,21 +15,42 @@ Many LLM-based multi-option decision pipelines evaluate candidates jointly in a 
 
 **InvariantOne** resolves these problems architecturally:
 1. **Independent Branch Encoding:** Each candidate choice $[S, Q, O_k]$ is processed independently through an adapted `Qwen/Qwen3.5-4B-Base` backbone.
-2. **Exact Distributional Permutation Equivariance:** Pooled option representations pass into a direct comparative head ($d=2560 \to 256 \to 1$), guaranteeing $\text{TVD} = 0.000000$ across all option permutations.
+2. **Exact Distributional Permutation Equivariance:** Pooled option representations pass into a direct comparative head (Projection: $\text{Linear}(2560 \to 256) \to \text{LayerNorm}(256)$; Absolute Scorer: $\text{Linear}(256 \to 256) \to \text{SiLU} \to \text{Linear}(256 \to 1)$), guaranteeing $\text{TVD} = 0.000000$ across all option permutations.
 3. **Calibrated Confidence:** Output probabilities are normalized with a frozen temperature parameter ($\tau^* = 1.0091$).
+
+---
+
+## Architecture & Specifications
+
+| Component | Specification |
+| :--- | :--- |
+| **Base Model** | `Qwen/Qwen3.5-4B-Base` (32 transformer layers, $d_{\text{model}} = 2560$) |
+| **Backbone Status** | Layers 0–27 strictly frozen (zero parameter updates) |
+| **LoRA Adaptation** | Layers 28–30 (`in_proj_qkv`, `out_proj`) and layer 31 (`q_proj`, `v_proj`, `o_proj`); $r=8, \alpha=16$ |
+| **Active LoRA Parameters** | 585,728 parameters |
+| **Readout Head** | `DirectComparativeHead`: Projection (`Linear(2560 → 256, bias=True)` → `LayerNorm(256)`) + Absolute Scorer (`Linear(256 → 256, bias=True)` → `SiLU` → `Linear(256 → 1, bias=True)`) |
+| **Active Head Parameters** | 722,177 parameters (frozen `absolute_only` inference mode: 656,128 projection + 66,049 scorer) |
+| **Auxiliary Stored Head Parameters** | 262,657 parameters (`pair_net`, stored in `head.pt` checkpoint but bypassed during v1 inference) |
+| **Total Stored Head Parameters** | 984,834 parameters (in checkpoint file `head.pt`) |
+| **Total Active Adapted Parameters** | 1,307,905 parameters (585,728 LoRA + 722,177 Head; <0.05% of base model) |
+| **Permutation Equivariance** | Exact algebraic distributional invariance ($\text{TVD} = 0.000000$) |
+| **Calibration Temperature** | $\tau^* = 1.0091$ (pre-calibrated temperature scaling) |
 
 ---
 
 ## Installation
 
 ```bash
-# From repository
+# Install from PyPI
+pip install invariantone
+
+# With optional HTTP server support
+pip install "invariantone[server]"
+
+# Or install from repository
 git clone https://github.com/tradertanmay/InvariantOne.git
 cd InvariantOne
 pip install -e .
-
-# With optional HTTP server support
-pip install -e ".[server]"
 ```
 
 ---
@@ -210,9 +231,11 @@ Evaluated on `FINAL-HOLDOUT-V2` ($1,536$ four-choice items) under strict preregi
 
 ## Documentation & Research
 
-- **Model Card:** [`model_card/MODEL_CARD.md`](model_card/MODEL_CARD.md)
-- **Release Manifest:** [`INVARIANTONE_V1_RELEASE_MANIFEST.json`](INVARIANTONE_V1_RELEASE_MANIFEST.json)
-- **License Audit:** [`RELEASE_LICENSE_AUDIT.md`](RELEASE_LICENSE_AUDIT.md)
+- **GitHub Repository:** [https://github.com/tradertanmay/InvariantOne](https://github.com/tradertanmay/InvariantOne)
+- **Hugging Face Model:** [https://huggingface.co/TanmaySah/InvariantOne-v1](https://huggingface.co/TanmaySah/InvariantOne-v1)
+- **Model Card:** [`model_card/MODEL_CARD.md`](https://github.com/tradertanmay/InvariantOne/blob/main/model_card/MODEL_CARD.md)
+- **Release Manifest:** [`INVARIANTONE_V1_RELEASE_MANIFEST.json`](https://github.com/tradertanmay/InvariantOne/blob/main/INVARIANTONE_V1_RELEASE_MANIFEST.json)
+- **License Audit:** [`RELEASE_LICENSE_AUDIT.md`](https://github.com/tradertanmay/InvariantOne/blob/main/RELEASE_LICENSE_AUDIT.md)
 
 ---
 
