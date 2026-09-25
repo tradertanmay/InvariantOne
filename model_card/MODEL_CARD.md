@@ -12,7 +12,6 @@ tags:
 - qwen
 ---
 
-
 # Model Card: InvariantOne-v1
 
 **Release Version:** `InvariantOne-v1`  
@@ -21,15 +20,46 @@ tags:
 **Base Backbone:** `Qwen/Qwen3.5-4B-Base` (Revision `1001bb4d826a52d1f399e183466143f4da7b741b`, Native BF16)  
 **Primary Checkpoint:** D5-L4 (N_op=16, Seed 42 Primary; Replicated across Seeds 43, 44)  
 
+- **PyPI:** [https://pypi.org/project/invariantone/](https://pypi.org/project/invariantone/)
+- **Source:** [https://github.com/tradertanmay/InvariantOne](https://github.com/tradertanmay/InvariantOne)
+
+---
+
+## Quickstart
+
+```bash
+pip install invariantone==1.0.1
+```
+
+```python
+from invariantone import InvariantOne
+
+model = InvariantOne.from_pretrained("invariantone-v1")
+
+result = model.decide(
+    state="Pressure is above the operating threshold.",
+    question="What action should be taken?",
+    options=[
+        "Close the inlet valve",
+        "Increase pressure",
+        "Maintain current state",
+        "Disable monitoring",
+    ],
+)
+
+print(result.choice)
+print(result.probabilities)
+```
+
 ---
 
 ## 1. Model Overview
 
 `InvariantOne-v1` is an order-equivariant probabilistic decision model designed for multi-candidate decision-making under complex operational constraints and relational rules. 
 
-Standard autoregressive language models suffer from severe position, length, and order biases when evaluating multiple-choice candidate decisions. `InvariantOne-v1` solves this structural failure through a decoupled comparative architecture:
+Standard autoregressive language models suffer from candidate-order and position sensitivity in joint multi-option evaluation. `InvariantOne-v1` addresses this structural sensitivity through a decoupled comparative architecture:
 1. **Candidate-Independent Scoring:** Each candidate action is scored independently conditioned on context, eliminating candidate order sensitivity and cross-option attention artifacts.
-2. **Analytic Distributional Equivariance:** Option-span pooled representations pass through a lightweight direct comparative projection head, producing logits normalized via softmax to guarantee exact permutation equivariance over candidate distributions (Mean TVD = 0.000000).
+2. **Analytic Distributional Equivariance:** Option-span pooled representations pass through a lightweight direct comparative projection head, producing scalar scores normalized via calibrated softmax. The architecture is mathematically permutation-equivariant by construction in real arithmetic.
 3. **Upper-Layer Relational Pre-Adaptation:** Parameter-efficient adaptation (LoRA on layers 28–31) trained across a diverse relational operator universe (N_op=16) instills strong, transferable relational reasoning capabilities into the comparative readout.
 
 ```
@@ -62,8 +92,18 @@ Context + Option_i ---> [Qwen3.5-4B (Frozen Layers 0-27 + LoRA Layers 28-31)]
 | **Total Stored Head Parameters** | 984,834 parameters (in checkpoint file `head.pt`) |
 | **Total Active Adapted Parameters** | 1,307,905 parameters (585,728 LoRA + 722,177 Head; <0.05% of base model) |
 | **Pooling Method** | Option-span mean pooling over candidate option token span |
-| **Scoring Scheme** | Independent candidate scoring with comparative readout: `P(y = i | x, {o_k}) = exp(s_i / τ*) / Σ_j exp(s_j / τ*)` |
+| **Scoring Scheme** | Independent candidate scoring with calibrated comparative softmax readout (see formulation below) |
 | **Calibration Temperature** | τ* = 1.0091 (pre-calibrated on validation split) |
+
+### Candidate Scoring Formulation
+
+Candidate choice probabilities are computed by independent forward passes through the adapted backbone and comparative head, followed by temperature-calibrated softmax normalization:
+
+```text
+p_i = exp(s_i / tau*) / sum_j exp(s_j / tau*)
+```
+
+where $s_i$ is the unnormalized scalar score for candidate option $i$, and $	au^* = 1.0091$ is the frozen calibration temperature.
 
 ### DirectComparativeHead Architectural Details
 
@@ -124,13 +164,20 @@ The frozen `DirectComparativeHead` uses a modular architecture for candidate eva
 | **`FINAL-L2b`** | 55.08% | 31.25% | 39.60% |
 | **`FINAL-L3`** | 56.84% | 39.45% | 53.16% |
 
+### Reproducibility & Public Artifacts
+
+The v1 public release includes the runtime, tests, checkpoint hashes, model card, and release manifest. The full FINAL-HOLDOUT-V2 evaluation corpus and generation pipeline are not included in this model repository.
+
+- **Release Manifest:** [`INVARIANTONE_V1_RELEASE_MANIFEST.json`](https://github.com/tradertanmay/InvariantOne/blob/main/INVARIANTONE_V1_RELEASE_MANIFEST.json)
+- **Reproduction Test:** [`tests/test_research_reproduction.py`](https://github.com/tradertanmay/InvariantOne/blob/main/tests/test_research_reproduction.py)
+
 ---
 
 ## 4. Invariance Guarantees & Systems Efficiency
 
 ### Structural Invariance Audit
-* **Distributional Equivariance**: Mean TVD = **0.000000**, Max TVD = **0.000000** across all 24 option permutations on 128 samples (3,072 evaluations).
-* **Top-1 Tie-Breaking Instability**: 1.56% top-choice flips under permutation, caused strictly by floating-point precision ties at decision boundaries under argmax selection. The underlying probabilistic output distribution is strictly equivariant.
+* **Distributional Equivariance**: The candidate-independent scoring architecture is exactly permutation-equivariant by construction in real arithmetic. In the finite-precision implementation audit, the measured distributional TVD was 0.000000 to six decimal places across all tested permutations on 128 samples (3,072 evaluations; Mean TVD = 0.000000, Max TVD = 0.000000).
+* **Top-1 Tie-Breaking Instability**: Discrete argmax selection showed a 1.56% top-choice flip rate in tied/near-tied cases due to tie-breaking behavior under finite floating-point precision. The underlying continuous probabilistic output distribution is strictly equivariant.
 
 ### Computational Efficiency (Measured on NVIDIA A100-SXM4-40GB)
 * **Benchmark Provenance Note:** A100 performance figures are from the frozen FINAL-HOLDOUT-V2 benchmarking run; release-wheel functionality was independently smoke-tested in a fresh Python 3.12 environment.

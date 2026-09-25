@@ -223,7 +223,7 @@ Evaluated on `FINAL-HOLDOUT-V2` ($1,536$ four-choice items) under strict preregi
 
 1. **Dynamic-$K$ Scientific Generalization:** While the runtime supports arbitrary $K \ge 2$ and exact permutation equivariance holds algebraically, empirical benchmark accuracy ($94.14\%$, $89.84\%$, etc.) was evaluated on 4-choice tasks ($K=4$). Experimental generalization to arbitrary $K$ has not been independently established in the scientific benchmarks.
 2. **Novel Relational Operators:** InvariantOne excels at familiar-operator recombination ($89.84\%$) and semantic domain transfer ($86.33\%$). However, completely unseen operator grammars drop to $55.08\%$ ($L_{2b}$) and $56.84\%$ ($L_3$), where 24-permutation causal averaging remains stronger ($65.43\%$).
-3. **Top-1 Argmax Tie Breaking:** While the output probability distribution is strictly permutation-equivariant ($\text{TVD} = 0.000000$), argmax top-1 selection exhibits a 1.56% flip rate under exact floating-point ties.
+3. **Top-1 Argmax Tie Breaking:** Discrete argmax selection showed a 1.56% top-choice flip rate in tied/near-tied cases due to tie-breaking behavior under finite floating-point precision. The underlying continuous probabilistic output distribution is strictly equivariant.
 4. **No Generative Explanations:** InvariantOne is a dedicated decision model; it does not produce token-by-token natural-language rationales.
 5. **Confidence Estimates:** Probabilities represent model confidence estimates and are not safety-critical certification guarantees.
 
@@ -231,10 +231,13 @@ Evaluated on `FINAL-HOLDOUT-V2` ($1,536$ four-choice items) under strict preregi
 
 ## Documentation & Research
 
+The v1 public release includes the runtime, tests, checkpoint hashes, model card, and release manifest. The full FINAL-HOLDOUT-V2 evaluation corpus and generation pipeline are not included in this repository.
+
 - **GitHub Repository:** [https://github.com/tradertanmay/InvariantOne](https://github.com/tradertanmay/InvariantOne)
 - **Hugging Face Model:** [https://huggingface.co/TanmaySah/InvariantOne-v1](https://huggingface.co/TanmaySah/InvariantOne-v1)
 - **Model Card:** [`model_card/MODEL_CARD.md`](https://github.com/tradertanmay/InvariantOne/blob/main/model_card/MODEL_CARD.md)
 - **Release Manifest:** [`INVARIANTONE_V1_RELEASE_MANIFEST.json`](https://github.com/tradertanmay/InvariantOne/blob/main/INVARIANTONE_V1_RELEASE_MANIFEST.json)
+- **Reproduction Test:** [`tests/test_research_reproduction.py`](https://github.com/tradertanmay/InvariantOne/blob/main/tests/test_research_reproduction.py)
 - **License Audit:** [`RELEASE_LICENSE_AUDIT.md`](https://github.com/tradertanmay/InvariantOne/blob/main/RELEASE_LICENSE_AUDIT.md)
 
 ---
