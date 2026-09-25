@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "invariantone"
+version = "1.0.0"
+description = "InvariantOne: High-Assurance Permutation-Equivariant Natural-Language Decision Model"
+readme = "README.md"
+authors = [
+    { name = "InvariantOne Team" }
+]
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+keywords = [
+    "decision-model",
+    "permutation-equivariance",
+    "qwen",
+    "lora",
+    "machine-learning",
+    "nlp",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "torch>=2.1.0",
+    "transformers>=4.45.0",
+    "accelerate>=0.30.0",
+    "pydantic>=2.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+server = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "httpx>=0.25.0",
+]
+
+[project.scripts]
+invariantone = "cli.invariantone_cli:main"
+
+[tool.setuptools.packages.find]
+include = ["invariantone*", "cli*"]
+
+[tool.setuptools.package-data]
+invariantone = ["weights/*", "*.json"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+exclude = [".venv", ".venv312", "build", "dist"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

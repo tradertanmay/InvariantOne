@@ -1,0 +1,67 @@
+{
+  "release_name": "InvariantOne-v1",
+  "version": "1.0.0",
+  "research_designation": "D5-L4 / Nop=16 / Seed 42",
+  "release_date": "2026-09-25",
+  "backbone": {
+    "name": "Qwen/Qwen3.5-4B-Base",
+    "revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+    "vocab_size": 248077
+  },
+  "calibration": {
+    "temperature": 1.0091,
+    "method": "validation_temperature_scaling"
+  },
+  "architecture": {
+    "type": "D5-L4",
+    "lora_rank": 8,
+    "lora_alpha": 16,
+    "adapted_layers": [
+      28,
+      29,
+      30,
+      31
+    ],
+    "head_mode": "absolute_only",
+    "head_hidden_size": 2560,
+    "head_proj_dim": 256,
+    "head_parameter_count": 722177
+  },
+  "cryptographic_signatures": {
+    "lora_adapter": {
+      "path": "checkpoints/invariantone-v1/adapter_model.pt",
+      "sha256": "a0000d3ec984d155fbad5abc854556904ecffe78b997900b677a8d8d5811e4d2",
+      "size_bytes": 1178134
+    },
+    "comparative_head": {
+      "path": "checkpoints/invariantone-v1/head.pt",
+      "sha256": "190d867dc302a89d420d19a8374a5db252ea2e71e4f40c68064ded23fc321384",
+      "size_bytes": 1974146
+    },
+    "hf_config": {
+      "path": "checkpoints/invariantone-v1/config.json",
+      "sha256": "2b12a5cdf1d98dc1c0da410e80c5e3259c5975fabb079aa781fb0afc5ae1b587",
+      "size_bytes": 665
+    },
+    "invariantone_config": {
+      "path": "checkpoints/invariantone-v1/invariantone_config.json",
+      "sha256": "4b3cb9c945463b2aedd8d0c6bfa9728e14ae002f1a3b258cf1925edff66f9125",
+      "size_bytes": 854
+    },
+    "model_card": {
+      "path": "model_card/MODEL_CARD.md",
+      "sha256": "73073b607ad4cab35f4a7b6aa0fee8cd9837f393277d9129ab2cfca47bacb61a",
+      "size_bytes": 9508
+    },
+    "formatter_code": {
+      "path": "invariantone/formatting.py",
+      "sha256": "e21781fd89b6daa990c5bcbfcf548c881fc408d24f3ba17afe418c8484580dcb",
+      "size_bytes": 3549
+    },
+    "calibration_code": {
+      "path": "invariantone/calibration.py",
+      "sha256": "87c3aeb18a8ae722fd2ae2d8245d3718eb5edeb5f38a6874281d972d72889ad8",
+      "size_bytes": 2353
+    }
+  }
+}

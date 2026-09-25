@@ -1,0 +1,27 @@
+{
+  "base_model_name_or_path": "Qwen/Qwen3.5-4B-Base",
+  "base_model_revision": "1001bb4d826a52d1f399e183466143f4da7b741b",
+  "model_type": "invariantone",
+  "architectures": [
+    "InvariantOne"
+  ],
+  "d5_config": {
+    "lora_rank": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.0,
+    "adapted_layers": [28, 29, 30, 31],
+    "head_type": "DirectComparativeHead",
+    "hidden_size": 2560,
+    "proj_dim": 256,
+    "head_mode": "absolute_only",
+    "param_count": 722177
+  },
+  "calibration": {
+    "temperature": 1.0091,
+    "method": "validation_temperature_scaling"
+  },
+  "tokenizer_config": {
+    "padding_side": "right",
+    "trust_remote_code": true
+  }
+}
