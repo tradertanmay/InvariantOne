@@ -15,7 +15,7 @@ tags:
 
 # Model Card: InvariantOne-v1
 
-**Release Version:** `InvariantOne-v1` (Frozen Release)  
+**Release Version:** `InvariantOne-v1`  
 **Date:** September 24, 2026  
 **License:** Apache-2.0  
 **Base Backbone:** `Qwen/Qwen3.5-4B-Base` (Revision `1001bb4d826a52d1f399e183466143f4da7b741b`, Native BF16)  
