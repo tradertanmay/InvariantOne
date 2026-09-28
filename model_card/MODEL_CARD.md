@@ -21,8 +21,13 @@ tags:
 **Base Backbone:** `Qwen/Qwen3.5-4B-Base` (Revision `1001bb4d826a52d1f399e183466143f4da7b741b`, Native BF16)  
 **Primary Checkpoint:** D5-L4 (N_op=16, Seed 42 Primary; Replicated across Seeds 43, 44)  
 
-- **PyPI:** [https://pypi.org/project/invariantone/](https://pypi.org/project/invariantone/)
-- **Source:** [https://github.com/tradertanmay/InvariantOne](https://github.com/tradertanmay/InvariantOne)
+---
+
+## Try InvariantOne
+
+[Interactive Demo](https://huggingface.co/spaces/TanmaySah/InvariantOne-Demo) | [GitHub](https://github.com/tradertanmay/InvariantOne)
+
+Try InvariantOne-v1 directly in the browser on structured multi-candidate decision problems.
 
 ---
 
@@ -129,16 +134,16 @@ The frozen `DirectComparativeHead` uses a modular architecture for candidate eva
 ### Cryptographic Checkpoint Signatures
 
 * **Primary Checkpoint (`Seed 42`, N_op=16)**:
-  - LoRA Weights: `checkpoints/invariantone-v1/adapter_model.pt` (Frozen Phase 7R research checkpoint)
+  - LoRA Weights: `adapter_model.pt` (Frozen Phase 7R research checkpoint)
     - SHA-256: `a0000d3ec984d155fbad5abc854556904ecffe78b997900b677a8d8d5811e4d2`
-  - Head Weights: `checkpoints/invariantone-v1/head.pt` (Frozen Phase 7R research checkpoint)
+  - Head Weights: `head.pt` (Frozen Phase 7R research checkpoint)
     - SHA-256: `190d867dc302a89d420d19a8374a5db252ea2e71e4f40c68064ded23fc321384`
 * **Replication Checkpoint (`Seed 43`, N_op=16)**:
-  - LoRA: `checkpoints/invariantone-v1/adapter_model_seed43.pt` (Frozen Phase 7R research checkpoint)
-  - Head: `checkpoints/invariantone-v1/head_seed43.pt` (Frozen Phase 7R research checkpoint)
+  - LoRA: `adapter_model_seed43.pt` (Frozen Phase 7R research checkpoint)
+  - Head: `head_seed43.pt` (Frozen Phase 7R research checkpoint)
 * **Replication Checkpoint (`Seed 44`, N_op=16)**:
-  - LoRA: `checkpoints/invariantone-v1/adapter_model_seed44.pt` (Frozen Phase 7R research checkpoint)
-  - Head: `checkpoints/invariantone-v1/head_seed44.pt` (Frozen Phase 7R research checkpoint)
+  - LoRA: `adapter_model_seed44.pt` (Frozen Phase 7R research checkpoint)
+  - Head: `head_seed44.pt` (Frozen Phase 7R research checkpoint)
 
 ---
 

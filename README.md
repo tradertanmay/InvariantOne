@@ -2,6 +2,8 @@
 
 **InvariantOne is a natural-language decision model that scores runtime-defined options directly rather than generating an answer token-by-token.**
 
+[Hugging Face Model](https://huggingface.co/TanmaySah/InvariantOne-v1) | [Live Demo](https://huggingface.co/spaces/TanmaySah/InvariantOne-Demo)
+
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://github.com/tradertanmay/InvariantOne/blob/main/LICENSE)
 [![Model: D5-L4](https://img.shields.io/badge/Architecture-D5--L4%20%7C%20Nop%3D16-purple.svg)](https://huggingface.co/TanmaySah/InvariantOne-v1)
