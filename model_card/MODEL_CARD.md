@@ -5,6 +5,7 @@ license: apache-2.0
 base_model:
 - Qwen/Qwen3.5-4B-Base
 pipeline_tag: text-classification
+library_name: invariantone
 tags:
 - decision-model
 - permutation-equivariance
@@ -34,6 +35,7 @@ pip install invariantone==1.0.2
 ```python
 from invariantone import InvariantOne
 
+# Load packaged v1 weights (canonical package alias for TanmaySah/InvariantOne-v1)
 model = InvariantOne.from_pretrained("invariantone-v1")
 
 result = model.decide(
@@ -50,6 +52,9 @@ result = model.decide(
 print(result.choice)
 print(result.probabilities)
 ```
+
+> **Note on Model Identifier:**  
+> `"invariantone-v1"` is the official package alias that resolves the verified weights bundled directly inside `invariantone`. If you clone this repository locally, you can also load directly from the local directory via `InvariantOne.from_pretrained("./")`.
 
 ---
 
